@@ -8,8 +8,11 @@ type Props = {
 
 type State = {
     error: boolean,
-    loading: boolean
+    loading: boolean,
+    value: string
 }
+
+const SECURITY_CODE = "paradigma"
 
 class ClassState extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -17,7 +20,8 @@ class ClassState extends React.Component<Props, State> {
 
         this.state = {
             error: false,
-            loading: false
+            loading: false,
+            value: ""
         }
     }
 
@@ -27,7 +31,13 @@ class ClassState extends React.Component<Props, State> {
         if(this.state.loading) {
             setTimeout(() => {
                 console.log("Haciendo la validación")
-                this.setState({loading: false})
+
+                if(this.state.value != SECURITY_CODE) {
+                    this.setState({error: true, loading: false})
+                } else {
+                    this.setState({error: false, loading: false})
+                }
+
                 console.log("Terminando la validación")
             }, 3000)
         }
@@ -40,11 +50,18 @@ class ClassState extends React.Component<Props, State> {
 
             <p>Por favor, escribe el código de seguridad.</p>
 
-            {this.state.error && <p>Error: El código es incorrecto.</p>}
+            {(this.state.error && !this.state.loading) && <p>Error: El código es incorrecto.</p>}
 
             {this.state.loading && <Loading/>}
 
-            <input type="text" placeholder="Código de seguridad" />
+            <input
+                type="text" 
+                placeholder="Código de seguridad" 
+                value={this.state.value}
+                onChange={(event: React.FormEvent<HTMLInputElement>) => {
+                    this.setState({value: event.currentTarget.value})
+                }}
+            />
 
             <button 
                 onClick={() => this.setState({loading: true})}
