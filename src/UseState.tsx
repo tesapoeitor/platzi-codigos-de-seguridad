@@ -4,35 +4,46 @@ type Props = {
     name: string
 }
 
+type State = {
+    error: boolean,
+    loading: boolean,
+    value: string
+}
+
 const SECURITY_CODE = "paradigma"
 
 function UseState({ name }: Props) {
-    const [ value, setValue ] = React.useState("")
-    const [ error, setError ] = React.useState(false)
-    const [ loading, setLoading ] = React.useState(false)
+    const [ state, setState ] = React.useState<State>({error: false, loading: false, value: ""})
 
     React.useEffect(() => {
         console.log("Inicio del efecto")
 
-        if(loading) {
+        if(state.loading) {
             setTimeout(() => {
                 console.log("Haciendo la validación")
-                setLoading(false)
                 console.log("Terminando la validación")
 
-                if(value != SECURITY_CODE) {
-                    setError(true)
+                if(state.value != SECURITY_CODE) {
+                    setState({
+                        ...state,
+                        error: true,
+                        loading: false
+                    })
                     return
                 }  
-                setError(false)
+                setState({
+                    ...state,
+                    error: false,
+                    loading: false
+                })
                 
             }, 3000)
         }
 
         console.log("Fin del efecto")
-    }, [loading])
+    }, [state.loading])
 
-    console.log(value)
+    console.log(state)
 
     return (
         <div>
@@ -40,21 +51,23 @@ function UseState({ name }: Props) {
 
             <p>Por favor, escribe el código de seguridad.</p>
 
-            {(error && !loading ) && <p>Error: El código es incorrecto.</p>}
+            {(state.error && !state.loading ) && <p>Error: El código es incorrecto.</p>}
 
-            {loading && <p>Cargando...</p>}
+            {state.loading && <p>Cargando...</p>}
 
             <input 
                 type="text" 
                 placeholder="Código de seguridad"
-                value={value}
-                onChange={(event: React.FormEvent<HTMLInputElement>) => setValue(event.currentTarget.value)}
+                value={state.value}
+                onChange={(event: React.FormEvent<HTMLInputElement>) => setState({...state, value: event.currentTarget.value})}
             />
 
             <button 
                 onClick={() => {
-                    setLoading(true)
-                    // setError(false)
+                    setState({
+                        ...state,
+                        loading: true
+                    })
                 }}
             >
                 Comprobar
