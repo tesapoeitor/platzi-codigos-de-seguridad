@@ -17,6 +17,53 @@ const SECURITY_CODE = "paradigma"
 function UseState({ name }: Props) {
     const [ state, setState ] = React.useState<State>({error: false, loading: false, value: "", deleted: false, confirmed: false})
 
+    const onConfirm = () => {
+        setState({
+            ...state,
+            error: false,
+            loading: false,
+            confirmed: true
+        })
+    }
+
+    const onError = () => {
+        setState({
+            ...state,
+            error: true,
+            loading: false
+        })
+    }
+
+    const onCheck = () => {
+        setState({
+            ...state,
+            loading: true
+        })
+    }
+
+    const onWrite = (newValue: string) => {
+        setState({
+            ...state,
+            value: newValue
+        })
+    }
+
+    const onDeleted = () => {
+        setState({
+            ...state,
+            deleted: true
+        })
+    }
+
+    const onReset = () => {
+        setState({
+            ...state,
+            confirmed: false,
+            deleted: false,
+            value: ""
+        })
+    }
+
     React.useEffect(() => {
         console.log("Inicio del efecto")
 
@@ -26,18 +73,9 @@ function UseState({ name }: Props) {
                 console.log("Terminando la validación")
 
                 if(state.value != SECURITY_CODE) {
-                    setState({
-                        ...state,
-                        error: true,
-                        loading: false
-                    })
+                    onError()
                 } else {
-                    setState({
-                        ...state,
-                        error: false,
-                        loading: false,
-                        confirmed: true
-                    })
+                    onConfirm()
                 }
                 
             }, 3000)
@@ -63,15 +101,12 @@ function UseState({ name }: Props) {
                     type="text" 
                     placeholder="Código de seguridad"
                     value={state.value}
-                    onChange={(event: React.FormEvent<HTMLInputElement>) => setState({...state, value: event.currentTarget.value})}
+                    onChange={(event: React.FormEvent<HTMLInputElement>) => onWrite(event.currentTarget.value)}
                 />
     
                 <button 
                     onClick={() => {
-                        setState({
-                            ...state,
-                            loading: true
-                        })
+                        onCheck()
                     }}
                 >
                     Comprobar
@@ -84,18 +119,12 @@ function UseState({ name }: Props) {
                 <p>¿Estas seguro que deseas eliminarlo?</p>
                 <button
                     onClick={() => {
-                        setState({
-                            ...state,
-                            deleted: true
-                        })
+                        onDeleted()
                     }}
                 >Sí, quiero eliminar</button>
                 <button
                     onClick={() => {
-                        setState({
-                            ...state,
-                            confirmed: false
-                        })
+                        onReset()
                     }}
                 >No, me arrepentí</button>
             </>
@@ -106,11 +135,7 @@ function UseState({ name }: Props) {
                 <p>Eliminado con éxito</p>
                 <button
                     onClick={() => {
-                        setState({
-                            ...state,
-                            confirmed: false,
-                            deleted: false
-                        })
+                        onReset()
                     }}
                 >Recuperar state</button>
             </>
