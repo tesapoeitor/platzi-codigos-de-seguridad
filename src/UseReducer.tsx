@@ -31,6 +31,15 @@ function UseReducer({ name }: Props) {
     // const [ state, setState ] = React.useState<State>({error: false, loading: false, value: "", deleted: false, confirmed: false})
     const [ state, dispatch ] = React.useReducer(reducer, initialState)
 
+    const onError = () => dispatch({ type: "ERROR"})
+    const onConfirm = () => dispatch({ type: "CONFIRM" })
+    const onCheck = () => dispatch({ type: "CHECK" })
+    const onDeleted = () => dispatch({ type: "DELETED" })
+    const onReset = () => dispatch({ type: "RESET" })
+    const onWrite = (event: React.FormEvent<HTMLInputElement>) => {
+        dispatch({ type: "WRITE", payload: event.currentTarget.value })
+    }
+
     React.useEffect(() => {
         console.log("Inicio del efecto")
 
@@ -40,9 +49,9 @@ function UseReducer({ name }: Props) {
                 console.log("Terminando la validación")
 
                 if(state.value != SECURITY_CODE) {
-                    dispatch({ type: "ERROR" })
+                    onError()
                 } else {
-                    dispatch({ type: "CONFIRM" })
+                    onConfirm()
                 }
                 
             }, 3000)
@@ -68,13 +77,11 @@ function UseReducer({ name }: Props) {
                     type="text" 
                     placeholder="Código de seguridad"
                     value={state.value}
-                    onChange={(event: React.FormEvent<HTMLInputElement>) => dispatch({ type: "WRITE", payload: event.currentTarget.value })}
+                    onChange={onWrite}
                 />
     
                 <button 
-                    onClick={() => {
-                        dispatch({ type: "CHECK" })
-                    }}
+                    onClick={onCheck}
                 >
                     Comprobar
                 </button>
@@ -85,14 +92,10 @@ function UseReducer({ name }: Props) {
             <>
                 <p>¿Estas seguro que deseas eliminarlo?</p>
                 <button
-                    onClick={() => {
-                        dispatch({ type: "DELETED" })
-                    }}
+                    onClick={onDeleted}
                 >Sí, quiero eliminar</button>
                 <button
-                    onClick={() => {
-                        dispatch({ type: "RESET" })
-                    }}
+                    onClick={onReset}
                 >No, me arrepentí</button>
             </>
         )
@@ -101,9 +104,7 @@ function UseReducer({ name }: Props) {
             <>
                 <p>Eliminado con éxito</p>
                 <button
-                    onClick={() => {
-                        dispatch({ type: "RESET" })
-                    }}
+                    onClick={onReset}
                 >Recuperar reducer</button>
             </>
         )
